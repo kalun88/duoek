@@ -43,27 +43,88 @@ const photos = [
   if (track) {
     let pos = 0;
     let paused = false;
-    // Speed in px per frame (~60fps) — lower = slower
+    let isDragging = false;
+    let startX = 0;
+    let startPos = 0;
     const speed = 0.4;
 
-    // Half-width = one full set of photos (for seamless loop)
     function getHalfWidth() {
       return track.scrollWidth / 2;
     }
 
+    function clampPos(p) {
+      const half = getHalfWidth();
+      p = p % half;
+      if (p < 0) p += half;
+      return p;
+    }
+
     function step() {
-      if (!paused) {
-        pos += speed;
-        if (pos >= getHalfWidth()) {
-          pos -= getHalfWidth();
-        }
+      if (!paused && !isDragging) {
+        pos = clampPos(pos + speed);
         track.style.transform = `translateX(-${pos}px)`;
       }
       requestAnimationFrame(step);
     }
 
-    track.addEventListener('mouseenter', () => { paused = true; });
-    track.addEventListener('mouseleave', () => { paused = false; });
+    // --- Mouse drag ---
+    track.addEventListener('mousedown', (e) => {
+      isDragging = true;
+      startX = e.clientX;
+      startPos = pos;
+      track.style.cursor = 'grabbing';
+      e.preventDefault();
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (!isDragging) return;
+      const delta = startX - e.clientX;
+      pos = clampPos(startPos + delta);
+      track.style.transform = `translateX(-${pos}px)`;
+    });
+
+    window.addEventListener('mouseup', () => {
+      if (!isDragging) return;
+      isDragging = false;
+      track.style.cursor = 'grab';
+    });
+
+    // --- Trackpad / scroll wheel (two-finger swipe on Mac) ---
+    const wrapper = track.parentElement;
+    let wheelPauseTimer = null;
+    (wrapper || track).addEventListener('wheel', (e) => {
+      // Only hijack clearly horizontal gestures (two-finger left/right swipe)
+      if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;
+      e.preventDefault();
+      pos = clampPos(pos + e.deltaX);
+      track.style.transform = `translateX(-${pos}px)`;
+      paused = true;
+      clearTimeout(wheelPauseTimer);
+      wheelPauseTimer = setTimeout(() => { paused = false; }, 800);
+    }, { passive: false });
+
+    // --- Touch drag ---
+    track.addEventListener('touchstart', (e) => {
+      isDragging = true;
+      startX = e.touches[0].clientX;
+      startPos = pos;
+    }, { passive: true });
+
+    track.addEventListener('touchmove', (e) => {
+      if (!isDragging) return;
+      const delta = startX - e.touches[0].clientX;
+      pos = clampPos(startPos + delta);
+      track.style.transform = `translateX(-${pos}px)`;
+      e.preventDefault();
+    }, { passive: false });
+
+    track.addEventListener('touchend', () => {
+      isDragging = false;
+    });
+
+    // Pause auto-scroll on hover (desktop), resume on leave
+    track.addEventListener('mouseenter', () => { paused = true; track.style.cursor = 'grab'; });
+    track.addEventListener('mouseleave', () => { paused = false; isDragging = false; track.style.cursor = ''; });
 
     requestAnimationFrame(step);
   }

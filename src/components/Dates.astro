@@ -7,6 +7,10 @@ const { dates } = Astro.props;
 
 const upcoming = dates.filter((d) => isUpcoming(d.date));
 const past = dates.filter((d) => !isUpcoming(d.date));
+
+// Shared row classes — grid keeps dot / date / title / link perfectly aligned
+const rowBase = "date-row py-5 grid items-center gap-x-4 rounded-lg -mx-2 px-2 transition-colors";
+const rowGrid = "grid-cols-[12px_220px_1fr_auto]";
 ---
 
 <section id="dates" class="py-24 border-t border-[var(--color-border)]">
@@ -24,25 +28,36 @@ const past = dates.filter((d) => !isUpcoming(d.date));
       <div class="mb-16">
         <p class="text-xs font-bold uppercase tracking-widest text-[var(--color-muted)] mb-4">À venir</p>
         <div class="divide-y divide-[var(--color-border)]">
-          {upcoming.map((d) => (
-            <div class="date-row py-5 flex flex-wrap items-center gap-4 rounded-lg -mx-2 px-2">
-              <div class="w-2 h-2 rounded-full bg-[var(--color-orange)] flex-shrink-0"></div>
-              <div class="font-semibold min-w-40">{formatDate(d.date)}</div>
-              <div class="flex-1">
-                <span class="font-bold">{d.title}</span>
-                {d.venue && <span class="text-[var(--color-muted)] ml-2">— {d.venue}</span>}
-              </div>
-              {d.city && (
-                <div class="text-sm text-[var(--color-muted)] uppercase tracking-wide">{d.city}</div>
-              )}
-              {d.ticketsUrl && (
-                <a href={d.ticketsUrl} target="_blank" rel="noopener"
-                   class="date-tickets text-xs font-bold uppercase tracking-widest border border-[var(--color-ink)] px-3 py-1 rounded-full transition-colors">
-                  Billets
-                </a>
-              )}
-            </div>
-          ))}
+          {upcoming.map((d) => {
+            const Tag = d.ticketsUrl ? 'a' : 'div';
+            const linkProps = d.ticketsUrl
+              ? { href: d.ticketsUrl, target: '_blank', rel: 'noopener noreferrer' }
+              : {};
+            return (
+              <Tag {...linkProps}
+                class={`${rowBase} ${rowGrid}${d.ticketsUrl ? ' cursor-pointer hover:bg-[var(--color-orange)]/10 group' : ''}`}>
+                <div class="w-2 h-2 rounded-full bg-[var(--color-orange)] justify-self-center"></div>
+                <div class="font-semibold">{formatDate(d.date)}</div>
+                <div class="min-w-0">
+                  <div class={`font-bold${d.ticketsUrl ? ' group-hover:text-[var(--color-orange)] transition-colors' : ''}`}>{d.title}</div>
+                  {(d.venue || d.city) && (
+                    <div class="text-sm text-[var(--color-muted)] mt-0.5">
+                      {d.venue && <span>{d.venue}</span>}
+                      {d.venue && d.city && <span> — </span>}
+                      {d.city && <span class="uppercase tracking-wide">{d.city}</span>}
+                    </div>
+                  )}
+                </div>
+                <div>
+                  {d.ticketsUrl && (
+                    <span class="text-xs font-bold uppercase tracking-widest text-[var(--color-orange)] group-hover:underline whitespace-nowrap">
+                      Billets →
+                    </span>
+                  )}
+                </div>
+              </Tag>
+            );
+          })}
         </div>
       </div>
     )}
@@ -51,19 +66,36 @@ const past = dates.filter((d) => !isUpcoming(d.date));
       <div class="opacity-50">
         <p class="text-xs font-bold uppercase tracking-widest text-[var(--color-muted)] mb-4">Passé</p>
         <div class="divide-y divide-[var(--color-border)]">
-          {past.map((d) => (
-            <div class="py-4 flex flex-wrap items-center gap-4">
-              <div class="w-2 h-2 rounded-full bg-[var(--color-border)] flex-shrink-0"></div>
-              <div class="text-sm min-w-40">{formatDate(d.date)}</div>
-              <div class="flex-1 text-sm">
-                <span class="font-semibold">{d.title}</span>
-                {d.venue && <span class="text-[var(--color-muted)] ml-2">— {d.venue}</span>}
-              </div>
-              {d.city && (
-                <div class="text-xs text-[var(--color-muted)] uppercase tracking-wide">{d.city}</div>
-              )}
-            </div>
-          ))}
+          {past.map((d) => {
+            const Tag = d.ticketsUrl ? 'a' : 'div';
+            const linkProps = d.ticketsUrl
+              ? { href: d.ticketsUrl, target: '_blank', rel: 'noopener noreferrer' }
+              : {};
+            return (
+              <Tag {...linkProps}
+                class={`${rowBase} ${rowGrid}${d.ticketsUrl ? ' cursor-pointer hover:opacity-80 group' : ''}`}>
+                <div class="w-2 h-2 rounded-full bg-[var(--color-border)] justify-self-center"></div>
+                <div class="font-semibold">{formatDate(d.date)}</div>
+                <div class="min-w-0">
+                  <div class="font-bold">{d.title}</div>
+                  {(d.venue || d.city) && (
+                    <div class="text-sm text-[var(--color-muted)] mt-0.5">
+                      {d.venue && <span>{d.venue}</span>}
+                      {d.venue && d.city && <span> — </span>}
+                      {d.city && <span class="uppercase tracking-wide">{d.city}</span>}
+                    </div>
+                  )}
+                </div>
+                <div>
+                  {d.ticketsUrl && (
+                    <span class="text-xs font-bold uppercase tracking-widest group-hover:underline whitespace-nowrap">
+                      Voir →
+                    </span>
+                  )}
+                </div>
+              </Tag>
+            );
+          })}
         </div>
       </div>
     )}
