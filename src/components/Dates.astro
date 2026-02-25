@@ -8,9 +8,11 @@ const { dates } = Astro.props;
 const upcoming = dates.filter((d) => isUpcoming(d.date));
 const past = dates.filter((d) => !isUpcoming(d.date));
 
-// Shared row classes — grid keeps dot / date / title / link perfectly aligned
-const rowBase = "date-row py-5 grid items-center gap-x-4 rounded-lg -mx-2 px-2 transition-colors";
-const rowGrid = "grid-cols-[12px_220px_1fr_auto]";
+// Shared row classes
+// Mobile:  3-col grid [dot | date+title stacked | link]
+// Desktop: 4-col grid [dot | date | title | link]  (sm:contents unwraps the inner div)
+const rowBase = "date-row py-4 sm:py-5 grid items-start sm:items-center gap-x-3 sm:gap-x-4 rounded-lg -mx-2 px-2 transition-colors";
+const rowGrid = "grid-cols-[12px_1fr_auto] sm:grid-cols-[12px_220px_1fr_auto]";
 ---
 
 <section id="dates" class="py-24 border-t border-[var(--color-border)]">
@@ -36,19 +38,24 @@ const rowGrid = "grid-cols-[12px_220px_1fr_auto]";
             return (
               <Tag {...linkProps}
                 class={`${rowBase} ${rowGrid}${d.ticketsUrl ? ' cursor-pointer hover:bg-[var(--color-orange)]/10 group' : ''}`}>
-                <div class="w-2 h-2 rounded-full bg-[var(--color-orange)] justify-self-center"></div>
-                <div class="font-semibold">{formatDate(d.date)}</div>
-                <div class="min-w-0">
-                  <div class={`font-bold${d.ticketsUrl ? ' group-hover:text-[var(--color-orange)] transition-colors' : ''}`}>{d.title}</div>
-                  {(d.venue || d.city) && (
-                    <div class="text-sm text-[var(--color-muted)] mt-0.5">
-                      {d.venue && <span>{d.venue}</span>}
-                      {d.venue && d.city && <span> — </span>}
-                      {d.city && <span class="uppercase tracking-wide">{d.city}</span>}
-                    </div>
-                  )}
+                {/* Dot — nudged down slightly on mobile to align with text */}
+                <div class="w-2 h-2 rounded-full bg-[var(--color-orange)] mt-[0.35rem] sm:mt-0 sm:justify-self-center"></div>
+                {/* Mobile: wrapper stacks date + title. Desktop: sm:contents makes children direct grid cells */}
+                <div class="sm:contents">
+                  <div class="font-semibold text-sm sm:text-base">{formatDate(d.date)}</div>
+                  <div class="min-w-0 mt-1 sm:mt-0">
+                    <div class={`font-bold${d.ticketsUrl ? ' group-hover:text-[var(--color-orange)] transition-colors' : ''}`}>{d.title}</div>
+                    {(d.venue || d.city) && (
+                      <div class="text-sm text-[var(--color-muted)] mt-0.5">
+                        {d.venue && <span>{d.venue}</span>}
+                        {d.venue && d.city && <span> — </span>}
+                        {d.city && <span class="uppercase tracking-wide">{d.city}</span>}
+                      </div>
+                    )}
+                  </div>
                 </div>
-                <div>
+                {/* Link — self-start on mobile so it stays top-right */}
+                <div class="self-start sm:self-center">
                   {d.ticketsUrl && (
                     <span class="text-xs font-bold uppercase tracking-widest text-[var(--color-orange)] group-hover:underline whitespace-nowrap">
                       Billets →
@@ -74,19 +81,21 @@ const rowGrid = "grid-cols-[12px_220px_1fr_auto]";
             return (
               <Tag {...linkProps}
                 class={`${rowBase} ${rowGrid}${d.ticketsUrl ? ' cursor-pointer hover:opacity-80 group' : ''}`}>
-                <div class="w-2 h-2 rounded-full bg-[var(--color-border)] justify-self-center"></div>
-                <div class="font-semibold">{formatDate(d.date)}</div>
-                <div class="min-w-0">
-                  <div class="font-bold">{d.title}</div>
-                  {(d.venue || d.city) && (
-                    <div class="text-sm text-[var(--color-muted)] mt-0.5">
-                      {d.venue && <span>{d.venue}</span>}
-                      {d.venue && d.city && <span> — </span>}
-                      {d.city && <span class="uppercase tracking-wide">{d.city}</span>}
-                    </div>
-                  )}
+                <div class="w-2 h-2 rounded-full bg-[var(--color-border)] mt-[0.35rem] sm:mt-0 sm:justify-self-center"></div>
+                <div class="sm:contents">
+                  <div class="font-semibold text-sm sm:text-base">{formatDate(d.date)}</div>
+                  <div class="min-w-0 mt-1 sm:mt-0">
+                    <div class="font-bold">{d.title}</div>
+                    {(d.venue || d.city) && (
+                      <div class="text-sm text-[var(--color-muted)] mt-0.5">
+                        {d.venue && <span>{d.venue}</span>}
+                        {d.venue && d.city && <span> — </span>}
+                        {d.city && <span class="uppercase tracking-wide">{d.city}</span>}
+                      </div>
+                    )}
+                  </div>
                 </div>
-                <div>
+                <div class="self-start sm:self-center">
                   {d.ticketsUrl && (
                     <span class="text-xs font-bold uppercase tracking-widest group-hover:underline whitespace-nowrap">
                       Voir →
