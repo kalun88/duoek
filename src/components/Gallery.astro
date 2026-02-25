@@ -1,0 +1,70 @@
+---
+// Horizontal scrolling photo gallery — auto-scrolls, pauses on hover
+const photos = [
+  { src: "/images/photo-3.jpg", alt: "duo ék — Pouet!" },
+  { src: "/images/photo-4.jpg", alt: "Kalun avec cône géant, Émilie à la trompette en extérieur" },
+  { src: "/images/photo-5.jpg", alt: "Gros plan avec poulet en caoutchouc" },
+  { src: "/images/photo-6.jpg", alt: "duo ék — Pouet!" },
+  { src: "/images/photo-7.jpg", alt: "duo ék — Pouet!" },
+];
+---
+
+<section class="bg-[var(--color-ink)] py-10 overflow-hidden relative">
+
+  <!-- Scroll hint gradient overlays -->
+  <div class="absolute left-0 top-0 bottom-0 w-16 z-10 pointer-events-none"
+       style="background: linear-gradient(to right, var(--color-ink), transparent)"></div>
+  <div class="absolute right-0 top-0 bottom-0 w-16 z-10 pointer-events-none"
+       style="background: linear-gradient(to left, var(--color-ink), transparent)"></div>
+
+  <!-- Auto-scrolling track (duplicated for seamless loop) -->
+  <div id="gallery-track" class="flex gap-4 pb-2" style="width: max-content;">
+    {[...photos, ...photos].map((photo, i) => (
+      <div class="flex-shrink-0 rounded-2xl overflow-hidden border-2 border-white/10
+                  hover:border-[var(--color-orange)] transition-colors group"
+           style="width: clamp(220px, 28vw, 340px); aspect-ratio: 3/4;">
+        <img src={photo.src}
+             alt={photo.alt}
+             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+             onerror="this.parentElement.style.background='#2a2a2a'; this.style.display='none'" />
+      </div>
+    ))}
+  </div>
+
+  <!-- Photo credit caption -->
+  <p class="text-center text-white/30 text-xs mt-4">
+    Photos : <a href="https://www.annieethier.com" target="_blank" rel="noopener"
+      class="hover:text-white/60 transition-colors">Annie Ethier</a>
+  </p>
+</section>
+
+<script>
+  const track = document.getElementById('gallery-track');
+  if (track) {
+    let pos = 0;
+    let paused = false;
+    // Speed in px per frame (~60fps) — lower = slower
+    const speed = 0.4;
+
+    // Half-width = one full set of photos (for seamless loop)
+    function getHalfWidth() {
+      return track.scrollWidth / 2;
+    }
+
+    function step() {
+      if (!paused) {
+        pos += speed;
+        if (pos >= getHalfWidth()) {
+          pos -= getHalfWidth();
+        }
+        track.style.transform = `translateX(-${pos}px)`;
+      }
+      requestAnimationFrame(step);
+    }
+
+    track.addEventListener('mouseenter', () => { paused = true; });
+    track.addEventListener('mouseleave', () => { paused = false; });
+
+    requestAnimationFrame(step);
+  }
+</script>

@@ -1,0 +1,72 @@
+---
+// Funders & acknowledgements — dark section with logos
+// Drop logo files into public/images/ with these exact names:
+//   logo-cam.png          — Conseil des arts de Montréal
+//   logo-canada-council.png — Canada Council / Conseil des arts du Canada
+//   logo-calq.png         — Conseil des arts et des lettres du Québec
+//   logo-codes-acces.png  — Codes d'accès
+//   logo-levivier.png     — Le Vivier
+//
+// Black-on-white logos → will be CSS-inverted to white automatically
+// White-on-black logos → background will be stripped (use transparent PNG)
+
+const logos = [
+  {
+    src: "/images/logo-levivier.png",
+    alt: "Le Vivier",
+    height: "66px",
+    style: "filter: invert(1);",
+  },
+  {
+    src: "/images/logo-codes-acces.png",
+    alt: "Codes d'accès",
+    height: "22px",
+    style: "",
+  },
+  {
+    src: "/images/logo-canada-council.png",
+    alt: "Conseil des arts du Canada / Canada Council for the Arts",
+    height: "44px",
+    style: "",
+  },
+  {
+    src: "/images/logo-calq.png",
+    alt: "Conseil des arts et des lettres du Québec",
+    height: "54px",
+    style: "",
+  },
+  {
+    src: "/images/logo-cam.png",
+    alt: "Conseil des arts de Montréal",
+    height: "72px",
+    style: "",
+  },
+];
+---
+
+<section class="bg-[var(--color-ink)] text-[var(--color-cream)] py-20 border-t border-white/10">
+  <div class="wrap">
+
+    <p class="text-xs font-bold uppercase tracking-widest text-[var(--color-orange)] mb-8">Remerciements</p>
+
+    <p class="text-base leading-relaxed text-white/80 mb-16" style="text-align: justify;">
+      Ce projet est rendu possible grâce au soutien du Conseil des arts et des lettres du Québec
+      dans le cadre du volet Jeunesse de Groupe le Vivier, du Conseil des arts de Montréal
+      et du Conseil des arts du Canada, avec le support de Codes d'Accès.
+    </p>
+
+    <!-- Logo grid -->
+    <div class="flex flex-wrap items-center gap-10">
+      {logos.map((logo) => (
+        <img
+          src={logo.src}
+          alt={logo.alt}
+          class="w-auto object-contain"
+          style={`height: ${logo.height}; ${logo.style}`}
+          onerror="this.style.display='none'"
+        />
+      ))}
+    </div>
+
+  </div>
+</section>

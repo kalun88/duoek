@@ -1,0 +1,48 @@
+---
+import { getSiteSettings, getDates } from "../lib/notion";
+import Hero    from "../components/Hero.astro";
+import About   from "../components/About.astro";
+import DuoEk  from "../components/DuoEk.astro";
+import Video   from "../components/Video.astro";
+import Atelier from "../components/Atelier.astro";
+import Gallery from "../components/Gallery.astro";
+import Dates   from "../components/Dates.astro";
+import Funders from "../components/Funders.astro";
+import Contact from "../components/Contact.astro";
+import "../styles/global.css";
+
+const [settings, dates] = await Promise.all([getSiteSettings(), getDates()]);
+---
+
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{settings.showTitle} — {settings.heroTitle}</title>
+    <meta name="description" content={`${settings.showTitle} par ${settings.heroTitle} — ${settings.tagline}`} />
+
+    <!-- Open Graph -->
+    <meta property="og:title"       content={`${settings.showTitle} — ${settings.heroTitle}`} />
+    <meta property="og:description" content={settings.tagline} />
+    <meta property="og:url"         content="https://duoek.com" />
+    <meta property="og:type"        content="website" />
+
+    <!-- Fonts preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  </head>
+  <body>
+    <Hero    settings={settings} />
+    <DuoEk />
+    <About />
+    <Video />
+    <Atelier />
+    <Gallery />
+    <Dates   dates={dates} />
+    <Funders />
+    <Contact settings={settings} />
+  </body>
+</html>

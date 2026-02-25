@@ -1,0 +1,74 @@
+---
+import type { SiteSettings } from "../lib/notion";
+interface Props { settings: SiteSettings; }
+const { settings } = Astro.props;
+---
+
+<!-- Top marquee — cream on ink -->
+<div class="overflow-hidden bg-[var(--color-ink)] text-[var(--color-cream)] py-2 text-xs font-bold uppercase tracking-widest select-none">
+  <div class="animate-marquee whitespace-nowrap">
+    {Array(8).fill(null).map(() => (
+      <span class="mr-10">Pouet! · duo ék · Montréal · trompette · trombone · 4 ans et + · Tutti · Zoobap ·</span>
+    ))}
+  </div>
+</div>
+
+<!-- Nav -->
+<nav class="flex items-center justify-between px-8 py-5 bg-[var(--color-orange)]">
+  <a href="/" class="text-lg font-extrabold tracking-tight text-white hover:opacity-70 transition-opacity">
+    Duo ék
+  </a>
+  <div class="flex gap-6 text-xs font-bold uppercase tracking-widest text-white/80">
+    <a href="#about"   class="hover:text-white transition-colors">Le spectacle</a>
+    <a href="#atelier" class="hover:text-white transition-colors">Atelier</a>
+    <a href="#dates"   class="hover:text-white transition-colors">Dates</a>
+    <a href="#contact" class="hover:text-white transition-colors">Contact</a>
+  </div>
+</nav>
+
+<!-- Hero — full-width orange poster -->
+<section class="bg-[var(--color-orange)] relative overflow-hidden" style="min-height: 88vh;">
+
+  <!-- SEO heading — visually hidden -->
+  <h1 class="sr-only">{settings.showTitle} — {settings.heroTitle}</h1>
+
+  <!-- POUET! logo in actual Zipper Std (transparent PNG) -->
+  <div class="relative z-10 px-8 pt-10 pointer-events-none">
+    <p class="text-white/60 text-xs font-bold uppercase tracking-[0.3em] mb-4"
+       style="font-family: var(--font-sans)">
+      Un spectacle pour les 4 ans et +
+    </p>
+    <img src="/images/pouet-logo.png"
+         alt="Pouet!"
+         aria-hidden="true"
+         class="w-full max-w-3xl"
+         style="filter: brightness(0) invert(1);" />
+  </div>
+
+  <!-- photo-1 in circle — no border, no shadow -->
+  <div class="absolute bottom-0 right-0 z-20 px-8"
+       style="width: clamp(280px, 44vw, 640px);">
+    <div class="rounded-full overflow-hidden" style="aspect-ratio: 1; width: 100%;">
+      <img src="/images/photo-1.jpg"
+           alt="Émilie Fortin et Kalun Leung"
+           class="w-full h-full object-cover"
+           style="object-position: center 20%;" />
+    </div>
+  </div>
+
+  <!-- Rubber chicken — bottom-left, floating -->
+  <div class="absolute bottom-4 left-6 z-30 animate-float pointer-events-none select-none"
+       style="width: clamp(80px, 10vw, 130px);">
+    <img src="/images/chicken.png" alt="" class="w-full h-auto" />
+  </div>
+
+</section>
+
+<!-- Bottom marquee — white on ink, reverse direction -->
+<div class="overflow-hidden bg-[var(--color-ink)] text-[var(--color-cream)] py-2 text-xs font-bold uppercase tracking-widest select-none">
+  <div class="animate-marquee whitespace-nowrap" style="animation-direction: reverse;">
+    {Array(8).fill(null).map(() => (
+      <span class="mr-10">Pouet! · duo ék · Montréal · trompette · trombone · 4 ans et + · Tutti · Zoobap ·</span>
+    ))}
+  </div>
+</div>

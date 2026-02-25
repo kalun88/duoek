@@ -1,0 +1,72 @@
+---
+import type { DateItem } from "../lib/notion";
+import { formatDate, isUpcoming } from "../lib/notion";
+
+interface Props { dates: DateItem[]; }
+const { dates } = Astro.props;
+
+const upcoming = dates.filter((d) => isUpcoming(d.date));
+const past = dates.filter((d) => !isUpcoming(d.date));
+---
+
+<section id="dates" class="py-24 border-t border-[var(--color-border)]">
+  <div class="wrap">
+
+    <h2 class="text-3xl font-extrabold mb-12 uppercase tracking-tight">Dates</h2>
+
+    {upcoming.length === 0 && past.length === 0 && (
+      <p class="text-[var(--color-muted)] text-base">
+        Aucune date à venir pour l'instant — revenez bientôt !
+      </p>
+    )}
+
+    {upcoming.length > 0 && (
+      <div class="mb-16">
+        <p class="text-xs font-bold uppercase tracking-widest text-[var(--color-muted)] mb-4">À venir</p>
+        <div class="divide-y divide-[var(--color-border)]">
+          {upcoming.map((d) => (
+            <div class="date-row py-5 flex flex-wrap items-center gap-4 rounded-lg -mx-2 px-2">
+              <div class="w-2 h-2 rounded-full bg-[var(--color-orange)] flex-shrink-0"></div>
+              <div class="font-semibold min-w-40">{formatDate(d.date)}</div>
+              <div class="flex-1">
+                <span class="font-bold">{d.title}</span>
+                {d.venue && <span class="text-[var(--color-muted)] ml-2">— {d.venue}</span>}
+              </div>
+              {d.city && (
+                <div class="text-sm text-[var(--color-muted)] uppercase tracking-wide">{d.city}</div>
+              )}
+              {d.ticketsUrl && (
+                <a href={d.ticketsUrl} target="_blank" rel="noopener"
+                   class="date-tickets text-xs font-bold uppercase tracking-widest border border-[var(--color-ink)] px-3 py-1 rounded-full transition-colors">
+                  Billets
+                </a>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    )}
+
+    {past.length > 0 && (
+      <div class="opacity-50">
+        <p class="text-xs font-bold uppercase tracking-widest text-[var(--color-muted)] mb-4">Passé</p>
+        <div class="divide-y divide-[var(--color-border)]">
+          {past.map((d) => (
+            <div class="py-4 flex flex-wrap items-center gap-4">
+              <div class="w-2 h-2 rounded-full bg-[var(--color-border)] flex-shrink-0"></div>
+              <div class="text-sm min-w-40">{formatDate(d.date)}</div>
+              <div class="flex-1 text-sm">
+                <span class="font-semibold">{d.title}</span>
+                {d.venue && <span class="text-[var(--color-muted)] ml-2">— {d.venue}</span>}
+              </div>
+              {d.city && (
+                <div class="text-xs text-[var(--color-muted)] uppercase tracking-wide">{d.city}</div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    )}
+
+  </div>
+</section>
